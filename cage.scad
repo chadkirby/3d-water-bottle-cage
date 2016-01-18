@@ -47,10 +47,10 @@ module moveToWaterBottle() {
 module waterBottle() {
     moveToWaterBottle() {
         translate([0,0,10]) minkowski() {
-            cylinder(d=53, h=124, center=false);
+            cylinder(d=53, h=112, center=false);
             sphere(d=20);
         }
-        translate([0, 0, 140]) {
+        translate([0, 0, 128]) {
             difference() {
                 cylinder(d=waterBottleD, h=25, center=false);
                 translate([0,0,7]) rotate_extrude() {
@@ -58,7 +58,7 @@ module waterBottle() {
                 }
             }
         }
-        translate([0,0,165]) cylinder(d=waterBottleD, h=100, center=false);
+        translate([0,0,153]) cylinder(d=waterBottleD, h=100, center=false);
     }
 }
 module cutoutAssembly() {
@@ -99,10 +99,6 @@ module wings(inflate=0) {
             bolts();
             waterBottle();
         }
-        *hull() {
-            moveToWaterBottle() cylinder(d=waterBottleD * 1.5, h=1, center=false);
-            translate([waterBottleD/2, 0, 0]) moveToWaterBottle() cylinder(d=25, h=80, center=false);
-           }
        translate([waterBottleD/2, 0, 0]) moveToWaterBottle() cylinder(d=25, h=200, center=false);
 
        hull() {
@@ -111,5 +107,5 @@ module wings(inflate=0) {
           }
     }
 }
-base();
-*wings();
+!base();
+wings();
