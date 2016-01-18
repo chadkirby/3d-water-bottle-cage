@@ -79,26 +79,37 @@ module base() {
 
         }
         cutoutAssembly();
-        wings(1);
+        hull() wings(1);
     }
 }
 module wings(inflate=0) {
     height = boltZoffset + 20 + inflate;
     difference() {
-        translate([0,0,15]) hull() {
-            translate([12, 0, (height)/2]) cube(size=[10, wid, (height)], center=true);
-            translate([-2,0,0]) moveToWaterBottle() cylinder(d=waterBottleD + 10, h=height, center=false);
+        translate([0,0,15]) intersection() {
+            hull() {
+                translate([12, 0, (height)/2]) cube(size=[10, wid, (height)], center=true);
+                translate([-2,0,0]) moveToWaterBottle() cylinder(d=waterBottleD + 10, h=height, center=false);
+            }
+            hull() {
+                translate([-120,0,0]) scale([1,2,1]) cylinder(d=waterBottleD * 4, h=1, center=false);
+                 translate([0,0,70]) moveToWaterBottle() cylinder(d=waterBottleD + 10, h=20, center=false);
+               }
         }
         translate([0,0,5]) {
             bolts();
             waterBottle();
         }
-        hull() {
+        *hull() {
             moveToWaterBottle() cylinder(d=waterBottleD * 1.5, h=1, center=false);
             translate([waterBottleD/2, 0, 0]) moveToWaterBottle() cylinder(d=25, h=80, center=false);
            }
-           translate([waterBottleD/2, 0, 0]) moveToWaterBottle() cylinder(d=25, h=200, center=false);
+       translate([waterBottleD/2, 0, 0]) moveToWaterBottle() cylinder(d=25, h=200, center=false);
+
+       hull() {
+           translate([-90,0,15]) scale([1,2,1]) cylinder(d=waterBottleD * 2, h=1, center=false);
+            translate([0,0,85]) moveToWaterBottle() cylinder(d=70, h=1, center=false);
+          }
     }
 }
-*base();
-wings();
+base();
+*wings();
