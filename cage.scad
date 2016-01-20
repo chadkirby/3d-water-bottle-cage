@@ -5,8 +5,8 @@ bikeTubeD = 32;
 waterBottleD = 72;
 waterBottleOffset = 15;
 
-module bikeTube(args) {
-    translate([-bikeTubeD/2,0,0]) cylinder(d=bikeTubeD, h=200, center=false);
+module bikeTube(inflate=0) {
+    translate([-bikeTubeD/2,0,0]) cylinder(d=bikeTubeD + 2*inflate, h=200, center=false);
 }
 module insert() {
     rotate([0,90]) cylinder(d=10, h=4.5, center=true);
@@ -47,24 +47,19 @@ module moveToWaterBottle() {
     translate([waterBottleD/2 + waterBottleOffset,0,0])
         children();
 }
+waterBottleRadius = 20;
 module waterBottle() {
     moveToWaterBottle() {
-        translate([0,0,10]) minkowski() {
-            cylinder(d=53, h=112, center=false);
-            sphere(d=20);
-        }
-        translate([0, 0, 128]) {
-            difference() {
-                cylinder(d=waterBottleD, h=25, center=false);
-                *translate([0,0,7]) rotate_extrude() {
-                    translate([waterBottleD/2,5,0]) scale([1,2,1]) circle(d=12.5);
+        hull() {
+                rotate_extrude() {
+                    translate([waterBottleD/2 - waterBottleRadius/2,waterBottleRadius/2,0]) circle(d=waterBottleRadius);
                 }
-                translate([0,0,5.5]) rotate_extrude() {
-                    translate([waterBottleD/2,5,0]) scale([1,1.75,1]) circle(d=12.5);
-                }
+                translate([0,0,122 - waterBottleRadius/2]) {
+                        rotate_extrude() {
+                            translate([waterBottleD/2 - waterBottleRadius/2,waterBottleRadius/2,0]) circle(d=waterBottleRadius);
+                        }
+                    }
             }
-        }
-        translate([0,0,153]) cylinder(d=waterBottleD, h=100, center=false);
     }
 }
 module cutoutAssembly() {
@@ -106,6 +101,24 @@ module oct(h, d, center) {
         cylinder(d=d/cos(180/8), $fn=8, h=h, center=center);
     }
 }
+module bottomSupport(inflateShell=0, inflateCutout=1) {
+    difference() {
+        translate([3.5,0,0]) hull() {
+            moveToLowerBolt() translate([5,0,7]) rotate([0, 90, 0]) oct(d=wid + inflateShell, h=9, center = true);
+
+            translate([-15,0,-5]) moveToWaterBottle() cylinder(d = wid + inflateShell, h=5, center=false);
+
+            translate([16,0,5]) rotate([90,0]) cylinder(d = 20, h=wid + inflateShell, center=true);
+        }
+        translate([0,0,5]) bolts();
+        translate([-1,0,0]) waterBottle();
+        for (ii=[-1:2:1]) {
+            translate([12 - (2 + inflateCutout)/2,ii * wid/2,5 - inflateCutout]) moveToLowerBolt() cube(size=[2 + inflateCutout, 4, 20], center=true);
+        }
+
+        *wings();
+    }
+}
 module minBase() {
     difference() {
         translate([0,0,5]) {
@@ -114,31 +127,47 @@ module minBase() {
                     hull() {
                         // lower
                         translate([-2,0,0]) oct(d=wid, h=12, center = true);
-                        translate([25,0,20]) rotate([0,45,0]) oct(d=wid, h=12, center = true);
+                        translate([4,0,0]) oct(d=wid, h=12, center = true);
                     }
                     hull() {
                         translate([-boltZoffset, 0]) {
                             oct(d=wid, h=12, center = true);
-                            translate([-25, 0, 0]) oct(d=wid, h=15, center = true);
+                            *translate([-25, 0, 0]) oct(d=wid, h=15, center = true);
                         }
                     }
-                    hull() {
+                    *hull() {
                         // upper
                         translate([-boltZoffset, 0]) {
                             translate([-25, 0, 0]) oct(d=wid, h=15, center = true);
                             translate([-50, 0, 20]) oct(d=wid, h=6, center = true);
                         }
                     }
+                    hull() {
+                        translate([-boltZoffset,0]) rotate([90,0]) cylinder(d=5, h=wid, center=true);
+                        translate([-boltZoffset - 42,0, 15]) rotate([90,0]) cylinder(d=5, h=wid, center=true);
+                    }
+                    difference() {
+                        translate([-boltZoffset - 47,0, 10]) rotate([90,0]) cylinder(d=20, h=wid, center=true);
+                        translate([-boltZoffset - 50,0, 4.5]) rotate([0,20,0]) cube(size=[30, wid+1, 20], center=true);
+                    }
                 }
-                translate([6,0,(boltZoffset + 20)/2 - 10]) cube(size=[2, wid, boltZoffset + 20], center=true);
+                intersection() {
+                    translate([0,0,-10]) difference() {
+                        bikeTube(2);
+                        bikeTube();
+                    }
+                    translate([0,0,(boltZoffset)/2]) cube(size=[50, wid, boltZoffset], center=true);
+                }
             }
         }
         translate([0,0,5]) {
             bolts();
         }
         bikeTube();
-        waterBottle();
-        hull() wings();
+        translate([-1,0]) {
+            hull() wings();
+            waterBottle();
+        }
         translate([-bikeTubeD/2,0,-25]) moveToLowerBolt() cylinder(d=40, h=20, center=false);
     }
 
@@ -172,10 +201,15 @@ module wings(inflate=0) {
         }
         translate([0,0,78]) cube(size=[30, 20, 10], center=true);
         waterBottle();
+        translate([0.5,0,0]) bottomSupport(1, 0);
     }
 }
 *base();
+*waterBottle();
 moveToWingZ() translate([45,-20,boltZoffset + 14]) rotate([180,0,0])
     wings();
 rotate([90,0,40])
+{
     minBase();
+    bottomSupport();
+}
