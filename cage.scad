@@ -180,13 +180,8 @@ module wings(inflate=0) {
                 translate([12, 0, (height)/2]) cube(size=[10, wid, (height)], center=true);
                 wingBase(height);
             }
-            hull() {
-                translate([-55,0,0]) scale([0.4,1.5,1]) cylinder(d=waterBottleD * 4, h=1, center=false);
-
-                cylinder(d=30, h=25, center=false);
-
-                 translate([0,0,70]) moveToWaterBottle() cylinder(d=waterBottleD + 10, h=20, center=false);
-               }
+            translate([0,0,-1]) rotate([0,15]) cube(size=[waterBottleD * 2, waterBottleD * 2, height * 2], center=true);
+            translate([0,0,80]) rotate([0,60]) cube(size=[waterBottleD * 2, waterBottleD * 2, height * 4], center=true);
         }
         translate([0,0,5]) {
             bolts();
@@ -195,18 +190,19 @@ module wings(inflate=0) {
        translate([waterBottleD/2, 0, 0]) moveToWaterBottle() cylinder(d=25, h=200, center=false);
 
         hull() {
-           translate([-90,0,15]) scale([1,2,1]) cylinder(d=waterBottleD * 2, h=1, center=false);
-           translate([0,0,85]) moveToWaterBottle()
-                cylinder(d=waterBottleD - 2, h=1, center=false);
+           translate([-90,0,25]) scale([1,2,1]) cylinder(d=waterBottleD * 2, h=1, center=false);
+           translate([2,0,77]) moveToWaterBottle()
+                rotate([0,15]) cylinder(d=waterBottleD - 2, h=1, center=false);
         }
         translate([0,0,78]) cube(size=[30, 20, 10], center=true);
         waterBottle();
-        translate([0.5,0,0]) bottomSupport(1, 0);
+        translate([0.5,0,0]) bottomSupport(1, 0.5);
     }
 }
 *base();
 *waterBottle();
-moveToWingZ() translate([45,-20,boltZoffset + 14]) rotate([180,0,0])
+moveToWingZ() translate([60,-10,boltZoffset + 12.5]) rotate([180,15,0])
+    // translate([-1,0])
     wings();
 rotate([90,0,40])
 {
