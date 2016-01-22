@@ -70,25 +70,6 @@ module cutoutAssembly() {
     bikeTube();
 }
 wid = 12;
-module base() {
-    difference() {
-        hull() {
-            translate([-5, 0, 15 + 80/2]) cube(size=[2, wid, 80], center=true);
-            translate([10, 0, 100/2]) cube(size=[2, wid, 100], center=true);
-            translate([28, 0, 170/2]) cube(size=[2, wid, 170], center=true);
-            translate([45, 0]) rotate([0,0,180/8]) cylinder(d=wid/cos(180/8), $fn=8, h=20, center=false);
-
-        }
-        cutoutAssembly();
-        moveToWingZ() {
-            hull() {
-                wingBase(wingHeight + 10);
-                moveToWaterBottle() translate([0,0,wingHeight + 32]) cylinder(d=waterBottleD, h=1, center=true);
-
-            }
-        }
-    }
-}
 wingHeight = boltZoffset + 20;
 module moveToWingZ() {
     translate([0,0,15]) children();
@@ -104,7 +85,7 @@ module oct(h, d, center) {
 module bottomSupport(inflateShell=0, inflateCutout=1) {
     difference() {
         translate([3.5,0,0]) hull() {
-            moveToLowerBolt() translate([5,0,7]) rotate([0, 90, 0]) oct(d=wid + inflateShell, h=9, center = true);
+            moveToLowerBolt() translate([5,0,7]) rotate([0, 90, 0]) oct(d=wid + inflateShell, h=12, center = true);
 
             translate([-15,0,-5]) moveToWaterBottle() cylinder(d = wid + inflateShell, h=5, center=false);
 
@@ -113,7 +94,7 @@ module bottomSupport(inflateShell=0, inflateCutout=1) {
         translate([0,0,5]) bolts();
         translate([-1,0,0]) waterBottle();
         for (ii=[-1:2:1]) {
-            translate([12 - (2 + inflateCutout)/2,ii * wid/2,5 - inflateCutout]) moveToLowerBolt() cube(size=[2 + inflateCutout, 4, 20], center=true);
+            translate([10 - (2 + inflateCutout)/2,ii * wid/2,7 - inflateCutout]) moveToLowerBolt() cube(size=[2 + inflateCutout, 4, 16], center=true);
         }
 
         *wings();
@@ -202,7 +183,7 @@ module wings(inflate=0) {
 *base();
 *waterBottle();
 moveToWingZ() translate([60,-10,boltZoffset + 12.5]) rotate([180,15,0])
-    // translate([-1,0])
+     // translate([-0.5,0])
     wings();
 rotate([90,0,40])
 {
