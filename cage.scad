@@ -1,16 +1,16 @@
 $fs = 1;
 $fa = 6;
-
-bikeTubeD = 32;
-waterBottleD = 72;
-waterBottleOffset = 15;
-
 module _ry() {
     rotate([90,0]) children();
 }
 module _rx() {
     rotate([0,90,0]) children();
 }
+
+bikeTubeD = 32;
+waterBottleD = 72;
+waterBottleOffset = 15;
+
 module bikeTube(inflate=0) {
     translate([-bikeTubeD/2,0,0]) cylinder(d=bikeTubeD + 2*inflate, h=200, center=false);
 }
@@ -144,7 +144,7 @@ module minBase() {
 wingTopAngle = 10;
 module wings(inflate=0) {
     height = wingHeight + inflate;
-    !difference() {
+    difference() {
         moveToWingZ() intersection() {
             hull() {
                 translate([12, 0, (height)/2]) cube(size=[10, wid, (height)], center=true);
@@ -165,12 +165,18 @@ module wings(inflate=0) {
            rotate([0, wingTopAngle]) translate([-5,0,boltZoffset * 0.9]) moveToWaterBottle() moveToLowerBolt() _ry() cylinder(d=10, h=waterBottleD + 25, center=true);
            translate([0,0,boltZoffset - 5]) moveToLowerBolt() _ry() cylinder(d=1, h=waterBottleD + 25, center=true);
         }
+        // ease the transition at the bottom of the cutout when printing
+        // upside-down
+        translate([waterBottleOffset - 5,0,21]) moveToLowerBolt() rotate([0, -45]) hull() {
+            cylinder(d=1, h=20, center=true);
+            translate([11,0,-4]) _ry() cylinder(d=1, h=40, center=true);
+        }
         waterBottle();
         translate([1,0,0]) bottomSupport(1, 0);
     }
 }
 
-if (true) {
+if (false) {
     // display in place
     translate([0,0]) wings();
     minBase();
