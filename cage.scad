@@ -6,6 +6,27 @@ module _ry() {
 module _rx() {
     rotate([0,90,0]) children();
 }
+module wedge(d, h, center, arc) {
+    hull() {
+        cylinder(d=0.1, h=h, center=center);
+        rotate([0,0,arc/2]) translate([0, d*2]) cylinder(d=0.1, h=h, center=center);
+        rotate([0,0,-arc/2]) translate([0, d*2]) cylinder(d=0.1, h=h, center=center);
+        translate([0, d*2]) cylinder(d=0.1, h=h, center=center);
+    }
+}
+module _arcOfCyl(d, h, center=true, arc=90) {
+    if (arc > 180) {
+        difference() {
+            cylinder(d=d, h=h, center=center);
+            wedge(d=d, h=h + 1, center=center, arc=360 - arc);
+        }
+    } else {
+        intersection() {
+            cylinder(d=d, h=h, center=center);
+            wedge(d=d, h=h + 1, center=center, arc=arc);
+        }
+    }
+}
 
 bikeTubeD = 32;
 waterBottleD = 72;
@@ -107,19 +128,22 @@ module minBase() {
                         translate([-2,0,0]) oct(d=wid, h=12, center = true);
                         translate([4,0,0]) oct(d=wid, h=12, center = true);
                     }
+                    translate([-boltZoffset, 0]) {
+                        oct(d=wid, h=14, center = true);
+                    }
+                }
+                // arm to secure the bottle from above
+                translate([0,0, boltZoffset + 2]) rotate([0, 15, 0]) {
                     hull() {
-                        translate([-boltZoffset, 0]) {
-                            oct(d=wid, h=14, center = true);
-                            *translate([-25, 0, 0]) oct(d=wid, h=15, center = true);
+                        _ry() cylinder(d=10, h=wid, center=true);
+                        translate([0,0, 40]) _ry() cylinder(d=5, h=wid, center=true);
+                    }
+                    // ball thing that fits in the bottle dimple thing
+                    translate([0,0,40 + 22/2 - 5/2]) {
+                        rotate([0,100]) difference() {
+                            _ry() _arcOfCyl(d=22, h=wid, center=true, arc=150);
+                            _ry() cylinder(d=22-10, h=wid+1, center=true);
                         }
-                    }
-                    hull() {
-                        translate([-boltZoffset,0]) rotate([90,0]) cylinder(d=5, h=wid, center=true);
-                        translate([-boltZoffset - 42,0, 15]) rotate([90,0]) cylinder(d=5, h=wid, center=true);
-                    }
-                    difference() {
-                        translate([-boltZoffset - 47,0, 10]) rotate([90,0]) cylinder(d=20, h=wid, center=true);
-                        translate([-boltZoffset - 50,0, 4.5]) rotate([0,20,0]) cube(size=[30, wid+1, 20], center=true);
                     }
                 }
                 intersection() {
@@ -133,10 +157,8 @@ module minBase() {
         }
         bolts();
         bikeTube();
-        translate([0,0]) {
-            hull() wings();
-            waterBottle();
-        }
+        hull() wings();
+        waterBottle();
         translate([-bikeTubeD/2,0,-25]) moveToLowerBolt() cylinder(d=40, h=20, center=false);
     }
 
@@ -178,7 +200,7 @@ module wings(inflate=0) {
 
 if (false) {
     // display in place
-    translate([0,0]) wings();
+    wings();
     minBase();
     bottomSupport();
 } else {
