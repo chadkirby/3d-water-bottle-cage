@@ -5,6 +5,12 @@ bikeTubeD = 32;
 waterBottleD = 72;
 waterBottleOffset = 15;
 
+module _ry() {
+    rotate([90,0]) children();
+}
+module _rx() {
+    rotate([0,90,0]) children();
+}
 module bikeTube(inflate=0) {
     translate([-bikeTubeD/2,0,0]) cylinder(d=bikeTubeD + 2*inflate, h=200, center=false);
 }
@@ -150,16 +156,15 @@ module wings(inflate=0) {
             translate([0,0,80]) rotate([0,45 + wingTopAngle]) cube(size=[waterBottleD * 2, waterBottleD * 2, height * 4], center=true);
         }
         bolts();
-        #waterBottle();
+        waterBottle();
         translate([waterBottleD/2, 0, 0]) moveToWaterBottle() cylinder(d=25, h=200, center=false);
 
         // cutout the wings
-        #hull() {
-           translate([-90,0,25]) scale([1,2,1]) cylinder(d=waterBottleD * 2, h=1, center=false);
-           translate([2,0,77]) moveToWaterBottle()
-                rotate([0,wingTopAngle]) cylinder(d=waterBottleD - 2, h=1, center=false);
+        hull() {
+           translate([0,0,15]) moveToLowerBolt() _ry() cylinder(d=1, h=waterBottleD + 25, center=true);
+           rotate([0, wingTopAngle]) translate([-5,0,boltZoffset * 0.9]) moveToWaterBottle() moveToLowerBolt() _ry() cylinder(d=10, h=waterBottleD + 25, center=true);
+           translate([0,0,boltZoffset - 5]) moveToLowerBolt() _ry() cylinder(d=1, h=waterBottleD + 25, center=true);
         }
-        translate([0,0,78]) cube(size=[30, 20, 10], center=true);
         waterBottle();
         translate([1,0,0]) bottomSupport(1, 0);
     }
