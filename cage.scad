@@ -139,10 +139,10 @@ module minBase() {
                         translate([0,0, 40]) _ry() cylinder(d=5, h=wid, center=true);
                     }
                     // ball thing that fits in the bottle dimple thing
-                    translate([0,0,40 + 22/2 - 5/2]) {
-                        rotate([0,100]) difference() {
+                    translate([0,0,40 + 22/2 - 2.5]) {
+                        rotate([0,105]) difference() {
                             _ry() _arcOfCyl(d=22, h=wid, center=true, arc=150);
-                            _ry() cylinder(d=22-10, h=wid+1, center=true);
+                            translate([-1,0,0]) _ry() cylinder(d=22-8, h=wid+1, center=true);
                         }
                     }
                 }
@@ -184,7 +184,7 @@ module wings(inflate=0) {
         // cutout the wings
         hull() {
            translate([0,0,15]) moveToLowerBolt() _ry() cylinder(d=1, h=waterBottleD + 25, center=true);
-           rotate([0, wingTopAngle]) translate([-5,0,boltZoffset * 0.9]) moveToWaterBottle() moveToLowerBolt() _ry() cylinder(d=10, h=waterBottleD + 25, center=true);
+           rotate([0, wingTopAngle]) translate([-5,0,boltZoffset * 0.9]) moveToWaterBottle() moveToLowerBolt() _ry() cylinder(d=8, h=waterBottleD + 25, center=true);
            translate([0,0,boltZoffset - 5]) moveToLowerBolt() _ry() cylinder(d=1, h=waterBottleD + 25, center=true);
         }
         // ease the transition at the bottom of the cutout when printing
