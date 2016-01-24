@@ -114,7 +114,12 @@ module bottomSupport(inflateShell=0, inflateCutout=1) {
         bolts();
         waterBottle();
         for (ii=[-1:2:1]) {
-            translate([10 - (2 + inflateCutout)/2,ii * wid/2,7 - inflateCutout]) moveToLowerBolt() cube(size=[2 + inflateCutout, 4, 16], center=true);
+            translate([11 - (2 + inflateCutout)/2,ii * wid/2,7 - inflateCutout])
+                moveToLowerBolt()
+                    rotate([ii*15,0]) hull() {
+                        translate([0, ii*2]) cube(size=[6 + inflateCutout, 1, 16 + inflateCutout], center=true);
+                        translate([0, -ii*(1 + inflateCutout/2)]) cylinder(d=0.1, h=20 + inflateCutout, center=true);
+                    }
         }
     }
 }
@@ -194,7 +199,7 @@ module wings(inflate=0) {
             translate([11,0,-4]) _ry() cylinder(d=1, h=40, center=true);
         }
         waterBottle();
-        translate([1,0,0]) bottomSupport(1, 0);
+        translate([1,0,0]) bottomSupport(1, 0.5);
     }
 }
 
