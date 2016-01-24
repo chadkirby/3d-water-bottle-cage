@@ -95,7 +95,7 @@ module moveToWingZ() {
     translate([0,0,15]) children();
 }
 module wingBase(height) {
-    translate([-2,0,0]) moveToWaterBottle() cylinder(d=waterBottleD + 9, h=height, center=false);
+    translate([-2,0,0]) moveToWaterBottle() cylinder(d=waterBottleD + 8, h=height, center=false);
 }
 module oct(h, d, center) {
     rotate([0,0,180/8]) {
@@ -144,10 +144,10 @@ module minBase() {
                         translate([0,0, 40]) _ry() cylinder(d=5, h=wid, center=true);
                     }
                     // ball thing that fits in the bottle dimple thing
-                    translate([0,0,40 + 22/2 - 2.5]) {
+                    translate([0,0,40 + 22/2 - 3.5]) {
                         rotate([0,105]) difference() {
-                            _ry() _arcOfCyl(d=22, h=wid, center=true, arc=150);
-                            translate([-1,0,0]) _ry() cylinder(d=22-8, h=wid+1, center=true);
+                            _ry() _arcOfCyl(d=20, h=wid, center=true, arc=150);
+                            translate([-2,0,0]) _ry() cylinder(d=22-8, h=wid+1, center=true);
                         }
                     }
                 }
@@ -200,6 +200,9 @@ module wings(inflate=0) {
         }
         waterBottle();
         translate([1,0,0]) bottomSupport(1, 0.5);
+        // there's a little piece of nothing that is left behind
+        // kill that
+        cube(size=[100, wid-4, 50], center=true);
     }
 }
 
