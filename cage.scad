@@ -106,72 +106,60 @@ module bottomSupport(inflateShell=0, inflateCutout=1) {
     difference() {
         translate([3,0,0]) union() {
             hull() {
-                moveToLowerBolt() translate([waterBottleOffset - 5,0,7]) _rx() oct(d=wid + inflateShell, h=5, center = true);
-
                 translate([-15,0,-5]) moveToWaterBottle() rotate([0,0,180/8]) cylinder(d = (wid + inflateShell)/cos(180/8), $fn=8, h=5, center=false);
 
-                translate([waterBottleOffset + 7.5,0,10]) _ry() cylinder(d = 30, h=wid + inflateShell, center=true);
+                translate([waterBottleOffset + 7.5,0,10]) _ry() rotate([0,0,135])
+                 _arcOfCyl(arc=90, d = 30, h=wid + inflateShell, center=true);
             }
-            translate([2,0,5]) moveToLowerBolt() _rx() hull() {
-                // lower
-                translate([-2,0,0]) oct(d=wid + inflateShell, h=waterBottleOffset  - 5, center = true);
-                translate([4,0,0]) oct(d=wid + inflateShell, h=waterBottleOffset  - 5, center = true);
-            }
+            moveToLowerBolt() _rx() cube(size=[20, wid, 15], center=true);
         }
-        bolts();
         waterBottle();
-        for (ii=[-1:2:1]) {
-            translate([waterBottleOffset - 2 - (2 + inflateCutout)/2,ii * wid/2,7 - inflateCutout])
-                moveToLowerBolt()
-                    rotate([ii*15,0]) hull() {
-                        translate([0, ii*2]) cube(size=[4 + inflateCutout, 1, 16 + inflateCutout], center=true);
-                        translate([0, -ii*(1 + inflateCutout/2)]) cylinder(d=0.1, h=20 + inflateCutout, center=true);
-                    }
-        }
     }
 }
 module minBase() {
     difference() {
-        translate([0,0,5]) {
-            moveToLowerBolt() {
-                _rx() {
-                    hull() {
+        union() {
+            bottomSupport();
+            translate([0,0,5]) {
+                moveToLowerBolt() {
+                    _rx() {
                         // lower
-                        translate([-2,0,0]) oct(d=wid, h=5, center = true);
-                        translate([4,0,0]) oct(d=wid, h=5, center = true);
-                    }
-                    translate([-boltZoffset, 0]) {
-                        oct(d=wid, h=14, center = true);
-                    }
-                }
-                // arm to secure the bottle from above
-                translate([0,0, boltZoffset + 2]) {
-                    hull() {
-                        translate([0,0, 0]) _ry() cylinder(d=5, h=wid, center=true);
-                        translate([0,0, 10]) _ry() cylinder(d=5, h=wid, center=true);
-                        rotate([0, 15, 0]) translate([0,0, 40]) _ry() cylinder(d=5, h=wid, center=true);
-                    }
-                    // ball thing that fits in the bottle dimple thing
-                    rotate([0, 15, 0]) translate([0,0,40 + 22/2 - 3.5]) {
-                        rotate([0,105]) difference() {
-                            _ry() _arcOfCyl(d=20, h=wid, center=true, arc=150);
-                            translate([-2,0,0]) _ry() cylinder(d=22-8, h=wid+1, center=true);
+                        translate([1.5,0,0]) cube(size=[wid+5, wid, 10], center=true);
+                        translate([-boltZoffset, 0]) {
+                            oct(d=wid, h=14, center = true);
                         }
                     }
-                }
-                intersection() {
-                    translate([0,0,-10]) difference() {
-                        bikeTube(2);
-                        bikeTube();
+                    // arm to secure the bottle from above
+                    translate([0,0, boltZoffset + 2]) {
+                        hull() {
+                            translate([0,0, 0]) _ry() cylinder(d=5, h=wid, center=true);
+                            translate([0,0, 10]) _ry() cylinder(d=5, h=wid, center=true);
+                            rotate([0, 15, 0]) translate([0,0, 40]) _ry() cylinder(d=5, h=wid, center=true);
+                        }
+                        // ball thing that fits in the bottle dimple thing
+                        rotate([0, 15, 0]) translate([0,0,40 + 22/2 - 3.5]) {
+                            rotate([0,105]) difference() {
+                                _ry() _arcOfCyl(d=20, h=wid, center=true, arc=150);
+                                translate([-2,0,0]) _ry() cylinder(d=22-8, h=wid+1, center=true);
+                            }
+                        }
                     }
-                    translate([0,0,(boltZoffset)/2]) cube(size=[50, wid, boltZoffset], center=true);
+                    intersection() {
+                        translate([0,0,-10]) difference() {
+                            bikeTube(2);
+                            bikeTube();
+                        }
+                        translate([0,0,(boltZoffset)/2]) cube(size=[50, wid, boltZoffset], center=true);
+                    }
                 }
             }
         }
         bolts();
         bikeTube();
         hull() wings();
-        translate([-bikeTubeD/2,0,-25]) moveToLowerBolt() cylinder(d=40, h=20, center=false);
+        // radius the transition into the lower support
+        translate([-1,0,-10]) moveToLowerBolt() _ry() cylinder(d=13, h=wid+1, center=true);
+
     }
 
 }
@@ -180,14 +168,19 @@ module wings(inflate=0) {
     height = wingHeight + inflate;
     difference() {
         moveToWingZ() intersection() {
-            hull() {
-                translate([12, 0, (height)/2]) cube(size=[10, wid, (height)], center=true);
-                wingBase(height);
+            union() {
+                hull() {
+                    translate([12, 0, (height)/2]) cube(size=[10, wid, (height)], center=true);
+                    wingBase(height);
+                }
+                translate([5,0,-5]) moveToLowerBolt() _rx() translate([6,0,0]) cube(size=[20, wid, 4], center=true);
             }
             // angle the top
             translate([0,0,-1]) rotate([0,wingTopAngle]) cube(size=[waterBottleD * 3, waterBottleD * 2, height * 2], center=true);
             // angle the bottom
-            translate([0,0,85]) rotate([0,50 + wingTopAngle]) cube(size=[waterBottleD * 2, waterBottleD * 2, height * 4], center=true);
+            translate([0,0,87]) rotate([0,45 + wingTopAngle]) cube(size=[waterBottleD * 2, waterBottleD * 2, height * 4], center=true);
+            // square off the bottom
+            translate([0,0,wingHeight/2 + 4]) cube(size=[waterBottleD * 2, waterBottleD * 2, wingHeight], center=true);
         }
         bolts();
         waterBottle();
@@ -195,36 +188,24 @@ module wings(inflate=0) {
 
         // cutout the wings
         hull() {
-           translate([0,0,15]) moveToLowerBolt() _ry() cylinder(d=1, h=waterBottleD + 25, center=true);
-           rotate([0, wingTopAngle]) translate([-5,0,boltZoffset * 0.9]) moveToWaterBottle() moveToLowerBolt() _ry() cylinder(d=8, h=waterBottleD + 25, center=true);
+            translate([4,0,12.5]) moveToLowerBolt() _ry() cylinder(d=1, h=waterBottleD + 25, center=true);
+            translate([0,0,12.5]) moveToLowerBolt() _ry() cylinder(d=1, h=waterBottleD + 25, center=true);
+           rotate([0, wingTopAngle]) translate([-5,0,boltZoffset * 0.92]) moveToWaterBottle() moveToLowerBolt() _ry() cylinder(d=8, h=waterBottleD + 25, center=true);
            translate([0,0,boltZoffset - 5]) moveToLowerBolt() _ry() cylinder(d=1, h=waterBottleD + 25, center=true);
         }
-        // ease the transition at the bottom of the cutout when printing
-        // upside-down
-        translate([waterBottleOffset - 5,0,21]) moveToLowerBolt() rotate([0, -45]) hull() {
-            cylinder(d=1, h=20, center=true);
-            translate([11,0,-4]) _ry() cylinder(d=1, h=40, center=true);
-        }
         waterBottle();
-        bottomSupport(0.5, 0.5);
-        // there's a little piece of nothing that is left behind
-        // kill that
-        cube(size=[100, wid + 1, 39], center=true);
-        cube(size=[100, wid - 4, 50], center=true);
     }
 }
 
 if (false) {
     // display in place
-    wings();
+    translate([0.5,0,0.5]) wings();
     minBase();
-    bottomSupport();
 } else {
     // lay out for printing
     moveToWingZ() translate([60,-10,boltZoffset + 12.5]) rotate([180,wingTopAngle,0])
         wings();
     rotate([90,0,40]) {
         minBase();
-        bottomSupport();
     }
 }
