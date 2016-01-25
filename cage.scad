@@ -36,13 +36,13 @@ module bikeTube(inflate=0) {
     translate([-bikeTubeD/2,0,0]) cylinder(d=bikeTubeD + 2*inflate, h=200, center=false);
 }
 module insert() {
-    rotate([0,90]) cylinder(d=10, h=4.5, center=true);
+    rotate([0,90]) cylinder(d=11.5, h=4.5, center=true);
 }
 module thruHole() {
     rotate([0,90]) cylinder(d=6, h=50, center=true);
 }
 module head() {
-    rotate([0,90]) translate([0,0,10]) cylinder(d=10, h=50, center=false);
+    rotate([0,90]) translate([0,0,10]) cylinder(d=10.5, h=50, center=false);
 }
 module bolt() {
     insert();
@@ -89,7 +89,7 @@ module waterBottle() {
             }
     }
 }
-wid = 12;
+wid = 13;
 wingHeight = boltZoffset + 20;
 module moveToWingZ() {
     translate([0,0,15]) children();
@@ -107,7 +107,7 @@ module bottomSupport(inflateShell=0, inflateCutout=1) {
         translate([3.5,0,0]) hull() {
             moveToLowerBolt() translate([5,0,7]) rotate([0, 90, 0]) oct(d=wid + inflateShell, h=12, center = true);
 
-            translate([-15,0,-5]) moveToWaterBottle() cylinder(d = wid + inflateShell, h=5, center=false);
+            translate([-15,0,-5]) moveToWaterBottle() rotate([0,0,180/8]) cylinder(d = (wid + inflateShell)/cos(180/8), $fn=8, h=5, center=false);
 
             translate([16,0,5]) rotate([90,0]) cylinder(d = 20, h=wid + inflateShell, center=true);
         }
