@@ -89,7 +89,7 @@ module waterBottle() {
             }
     }
 }
-wid = 13;
+wid = 13.5;
 wingHeight = boltZoffset + 20;
 module moveToWingZ() {
     translate([0,0,15]) children();
@@ -116,7 +116,7 @@ module bottomSupport(inflateShell=0, inflateCutout=1) {
         waterBottle();
     }
 }
-module minBase() {
+module base() {
     difference() {
         union() {
             bottomSupport();
@@ -124,9 +124,9 @@ module minBase() {
                 moveToLowerBolt() {
                     _rx() {
                         // lower
-                        translate([1.5,0,0]) cube(size=[wid+5, wid, 10], center=true);
+                        translate([1.5,0,0]) cube(size=[wid+3, wid, 10], center=true);
                         translate([-boltZoffset, 0]) {
-                            oct(d=wid, h=14, center = true);
+                            cube(size=[wid, wid, 14], center=true);
                         }
                     }
                     // arm to secure the bottle from above
@@ -156,24 +156,30 @@ module minBase() {
         }
         bolts();
         bikeTube();
-        hull() wings();
+        hull() wings(noBlock = true);
+        moveToWingZ() wingBlock(0.5);
         // radius the transition into the lower support
         translate([-1,0,-10]) moveToLowerBolt() _ry() cylinder(d=13, h=wid+1, center=true);
 
     }
 
 }
+module wingBlock(inflate = 0) {
+    translate([5,0,-3]) moveToLowerBolt() _rx() translate([6,0,0]) cube(size=[12 + inflate, wid - 4, 4 + inflate], center=true);
+}
 wingTopAngle = 10;
-module wings(inflate=0) {
-    height = wingHeight + inflate;
-    difference() {
+module wings(inflate = 0, noBlock=false) {
+    height = wingHeight;
+    color("LightBlue", 0.75) difference() {
         moveToWingZ() intersection() {
             union() {
                 hull() {
                     translate([12, 0, (height)/2]) cube(size=[10, wid, (height)], center=true);
                     wingBase(height);
                 }
-                translate([5,0,-5]) moveToLowerBolt() _rx() translate([6,0,0]) cube(size=[20, wid, 4], center=true);
+                if (!noBlock) {
+                    wingBlock(inflate);
+                }
             }
             // angle the top
             translate([0,0,-1]) rotate([0,wingTopAngle]) cube(size=[waterBottleD * 3, waterBottleD * 2, height * 2], center=true);
@@ -199,13 +205,14 @@ module wings(inflate=0) {
 
 if (false) {
     // display in place
-    translate([0.5,0,0.5]) wings();
-    minBase();
+    //translate([0.5,0,0.5])
+    wings();
+    base();
 } else {
     // lay out for printing
     moveToWingZ() translate([60,-10,boltZoffset + 12.5]) rotate([180,wingTopAngle,0])
         wings();
     rotate([90,0,40]) {
-        minBase();
+        base();
     }
 }
