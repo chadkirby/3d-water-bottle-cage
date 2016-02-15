@@ -144,6 +144,7 @@ module base() {
                             }
                         }
                     }
+                    // long skinny body between the screws
                     intersection() {
                         translate([0,0,-10]) difference() {
                             bikeTube(2);
@@ -165,7 +166,13 @@ module base() {
 
 }
 module wingBlock(inflate = 0) {
-    translate([5,0,-3]) moveToLowerBolt() _rx() translate([6,0,0]) cube(size=[12 + inflate, wid - 4, 4 + inflate], center=true);
+    // align the lower wing thing with the lower base
+    height = 2 + inflate;
+    translate([4,0,-3]) moveToLowerBolt() _rx() translate([6,0,0])
+    hull() {
+        translate([0,0,height/2]) cube(size=[13 + inflate, wid, 0.1], center=true);
+        translate([0,0,-height/2]) cube(size=[13 + inflate, 0.1, 0.1], center=true);
+    }
 }
 wingTopAngle = 10;
 module wings(inflate = 0, noBlock=false) {
