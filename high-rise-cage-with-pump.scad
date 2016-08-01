@@ -221,7 +221,7 @@ module base() {
         }
         bolts();
         bikeTube();
-        hull() wings(noBlock = true);
+        hull() wings(noBlock = true, noPump = true);
         *translate([0,0,5]) moveToLowerBolt() wingBlock(0.5);
         // radius the transition into the lower support
         translate([-1,0,-10]) moveToLowerBolt() scale([1.5, 1, 0.5]) _ry() cylinder(d=13, h=wid+1, center=true);
@@ -250,7 +250,7 @@ module shapeWings() {
 }
 
 wingTopAngle = 10;
-module wings(inflate = 0, noBlock=true) {
+module wings(inflate = 0, noBlock=true, noPump = false) {
     height = wingHeight;
     color("LightBlue", 0.75) difference() {
         moveToWingZ() shapeWings() {
@@ -275,7 +275,9 @@ module wings(inflate = 0, noBlock=true) {
         }
         waterBottle();
     }
-    pump();
+    if (!noPump) {
+        pump();
+    }
 }
 
 if (false) {
