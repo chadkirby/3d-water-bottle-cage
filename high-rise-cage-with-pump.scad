@@ -99,8 +99,8 @@ waterBottleOffset = 10;
 module bikeTube(inflate=0) {
     translate([-bikeTubeD/2,0,0]) cylinder(d=bikeTubeD + 2*inflate, h=200, center=false);
 }
-module insert() {
-    _rx() cylinder(d=11.5, h=4.5, center=true);
+module insert(dd = 0, dh = 0) {
+    _rx() cylinder(d=11.5 + dd, h=4.5 + dh, center=true);
 }
 module thruHole() {
     _rx() cylinder(d=6, h=50, center=true);
@@ -117,20 +117,23 @@ boltZoffset = 66.3;
 module moveToLowerBolt() {
     translate([0,0, 10]) children();
 }
+module lowerBolt() {
+    hull() {
+        translate([0,0,1]) insert();
+        translate([0,0,-1]) insert();
+    }
+    hull() {
+        translate([0,0,1]) thruHole();
+        translate([0,0,-1]) thruHole();
+    }
+    hull() {
+        translate([0,0,1]) head();
+        translate([0,0,-1]) head();
+    }
+}
 module bolts() {
     translate([0,0,5]) moveToLowerBolt() {
-        hull() {
-            translate([0,0,1]) insert();
-            translate([0,0,-1]) insert();
-        }
-        hull() {
-            translate([0,0,1]) thruHole();
-            translate([0,0,-1]) thruHole();
-        }
-        hull() {
-            translate([0,0,1]) head();
-            translate([0,0,-1]) head();
-        }
+        lowerBolt();
         translate([0,0,boltZoffset]) bolt();
     }
 }
